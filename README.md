@@ -26,23 +26,23 @@ The project follows the **Medallion Architecture** to ensure data lineage and re
 
 ## Core Technologies & Modeling Stack
 
-- **1. Data Processing:**  
+**1. Data Processing:**  
   **Polars** (Primary Engine), **Parquet**, **DuckDB**  
   High-performance data processing stack used for handling ~60GB of SEC EDGAR financial filings with efficient out-of-core computation and analytical querying.
 
-- **2. Machine Learning & Modeling:**  
+**2. Machine Learning & Modeling:**  
   **XGBoost**, **Scikit-Learn**  
   Used to build and evaluate financial distress prediction models with walk-forward validation and robust feature engineering.
 
-- **3. Natural Language Processing:**  
+**3. Natural Language Processing:**  
   **FinBERT (via Transformers)**  
   Extracts sentiment signals from Management Discussion & Analysis (MD&A) sections of SEC filings to augment financial ratio features.
 
-- **4. Model Explainability:**  
+**4. Model Explainability:**  
   **SHAP (SHapley Additive exPlanations)**  
   Provides transparent “reason codes” for distress predictions by identifying which financial or textual features most influence the model output.
 
-- **5. Deployment & Analytics Interface:**  
+**5. Deployment & Analytics Interface:**  
   **Streamlit**, **Google Colab**  
   Enables rapid experimentation, interactive dashboards, and accessible visualization of financial risk predictions.
 
