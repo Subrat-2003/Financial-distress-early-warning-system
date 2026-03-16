@@ -1,0 +1,11 @@
+Polars
+Pandas
+Duckdb
+Xgboost
+Scikit-learn
+Streamlit
+Beautifulsoup4
+Requests
+Shap
+Pyarrow
+Numpy
