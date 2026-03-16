@@ -30,6 +30,6 @@ The project follows the **Medallion Architecture** to ensure data lineage and re
 - `data/`: Link to the 60GB Google Drive dataset.
 - `docs/`: Architecture diagrams and data dictionary.
 
-## 📊 Dataset Access
+## Dataset Access
 Due to the 60GB scale, the raw and processed data is hosted on Google Drive. 
 **See [data/dataset_link.md](data/dataset_link.md) for access instructions.**
