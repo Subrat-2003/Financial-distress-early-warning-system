@@ -1,0 +1,17 @@
+# Data files - Too big for GitHub
+*.csv
+*.xlsx
+*.zip
+*.json
+!modeling/xgb_model.json
+
+# Keep the small Parquet file but ignore others
+*.parquet
+!data/lstm_ready_data.parquet
+
+# Python junk
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+.env
