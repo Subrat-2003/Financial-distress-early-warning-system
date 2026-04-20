@@ -1,0 +1,10 @@
+streamlit
+pandas
+numpy==1.26.4
+pyarrow
+xgboost==2.0.3
+shap==0.44.1
+plotly
+scikit-learn
+joblib
+matplotlib
