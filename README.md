@@ -12,9 +12,9 @@
 
 ## Overview
 
-FDEWS processes raw SEC 10-K/10-Q filings at scale to predict corporate financial distress 12 months ahead. It fuses 17 engineered financial ratios with FinBERT-derived MD&A sentiment signals into a Multimodal Gold Dataset, then runs XGBoost inference with full SHAP explainability — returning a crash probability score and a ranked feature breakdown for every company.
+FDEWS handles out-of-core processing for 60GB+ of SEC 10-K/10-Q filings using Polars Lazy Evaluation — keeping RAM footprint low regardless of dataset size. It maps 17 engineered financial ratios to FinBERT-derived MD&A textual sentiment to predict corporate financial distress 12 months ahead. XGBoost runs inference with full SHAP explainability, returning a crash probability and ranked feature attribution for every company.
 
-**Production winner: XGBoost** (96.2% confidence, balanced precision/recall) over LSTM (high recall, low precision — unsuitable for real-world credit decisions).
+**Production winner: XGBoost** — chosen for its tunable precision/recall threshold, which is critical in credit risk where a false positive wastes capital and a false negative destroys it.
 
 ---
 
@@ -22,7 +22,7 @@ FDEWS processes raw SEC 10-K/10-Q filings at scale to predict corporate financia
 
 ### 3-Tier Application Design
 
-![3-Tier System Architecture](docs/images/3_tier_system_architecture.png)
+![3-Tier System Architecture](docs/3-TIER_SYSTEM_ARCHITECTURE.png)
 
 The system is organized into three tiers:
 
@@ -34,7 +34,7 @@ The system is organized into three tiers:
 
 ## SEC Multimodal Data Refinery Pipeline
 
-![SEC Multimodal Data Refinery Pipeline](docs/images/SEC_MULTIMODAL_DATA_REFINERY_PIPELINE_V2.png)
+![SEC Multimodal Data Refinery Pipeline](docs/SEC_MULTIMODAL_DATA_REFINERY_PIPELINE_V2.png)
 
 The pipeline follows the **Medallion Architecture**:
 
@@ -57,7 +57,7 @@ Range: `-1.0` (extreme distress) → `+1.0` (extreme confidence). Derived from F
 
 ## Feature Order Lock — Silent Prediction Drift Prevention
 
-![Feature Order Lock](docs/images/FEATURE_ORDER_LOCK_V2.png)
+![Feature Order Lock](docs/FEATURE_ORDER_LOCK_V2.png)
 
 Column mismatch between training and inference causes **silent prediction corruption** — the model runs without error but scores the wrong features. The Feature Order Lock enforces:
 
@@ -66,6 +66,8 @@ Column mismatch between training and inference causes **silent prediction corrup
 3. **Feature count check** — any deviation raises a hard error before the scaler is applied.
 4. **Scaler synchronization** — `scaler.joblib` applies identical `mean_` and `scale_` parameters from training.
 5. **DMatrix construction** — validated, scaled features passed to `model.json` for inference.
+
+> **Null handling:** If a company misses a filing quarter, affected ratio features are forward-filled from the most recent available filing before the feature vector is constructed. A missing filing does not break the pipeline — it degrades gracefully to the last known state. The `persistent_distress_flag` accounts for this by using a 2-quarter window.
 
 **The 17 locked features (in order):**
 
@@ -84,7 +86,7 @@ Metadata (`cik`, `company_name`, `adsh`, `ddate`, `crash_label`) is excluded fro
 
 ## Modeling Showdown: LSTM vs XGBoost
 
-![Model Comparison](docs/images/Model_Comparision_V2.png)
+![Model Comparison](docs/MODEL_COMPARISION_V2.png)
 
 | Dimension | LSTM | XGBoost |
 |---|---|---|
@@ -92,8 +94,8 @@ Metadata (`cik`, `company_name`, `adsh`, `ddate`, `crash_label`) is excluded fro
 | **Strength** | Sequential distress pattern analysis | Nonlinear financial relationship detection |
 | **Weakness** | High recall, low precision — false alarm machine | — |
 | **Status** | Experimental benchmarking only | **Production model** |
-| **Why LSTM failed** | Flags nearly all healthy companies as distressed; unusable for credit decisions | — |
-| **Why XGBoost won** | Balanced precision/recall, captures threshold interactions (e.g., high debt + negative sentiment = distress), superior stability | ✅ |
+| **Why LSTM failed** | Likely overfitting on temporal noise; flags nearly all healthy companies as distressed. In credit risk, a false positive wastes capital. A false negative destroys it. LSTM's low precision makes the cost of false positives unacceptable. | — |
+| **Why XGBoost won** | Offers a tunable decision threshold to control the precision/recall trade-off explicitly. Captures nonlinear interactions (e.g., high `debt_to_equity` is tolerable unless `sentiment_signal` is negative). Superior stability across market cycles. | ✅ |
 
 **XGBoost Production Output Example:**
 - Crash Probability: **82.6%** | Risk Level: HIGH | Confidence: 0.87 | Horizon: 12 months
@@ -103,7 +105,7 @@ Metadata (`cik`, `company_name`, `adsh`, `ddate`, `crash_label`) is excluded fro
 
 ## Live Dashboard
 
-> **[🚀 Open Live Demo on HuggingFace Spaces](https://huggingface.co/spaces/Jenababu/sec-risk-dashboard)**
+> **[🚀 Open Live Demo on HuggingFace Spaces](---)**
 
 ![FDEWS Dashboard Screenshot](docs/images/dashboard_screenshot.png)
 
@@ -115,7 +117,7 @@ Metadata (`cik`, `company_name`, `adsh`, `ddate`, `crash_label`) is excluded fro
 
 | Layer | Technology | Role |
 |---|---|---|
-| Data Processing | **Polars** (Lazy/Streaming) | Out-of-core 60GB ingestion, low RAM footprint |
+| Data Processing | **Polars** (Lazy/Streaming) | Out-of-core 60GB ingestion — processes larger-than-RAM datasets by building a query plan and materializing only required columns |
 | Storage | **Parquet** | Columnar, compressed, fast analytical reads |
 | NLP | **FinBERT** (HuggingFace Transformers) | MD&A sentiment extraction + Softmax signal |
 | HTML Parsing | **BeautifulSoup + Regex** | MD&A section extraction from SEC HTML filings |
@@ -131,20 +133,26 @@ Metadata (`cik`, `company_name`, `adsh`, `ddate`, `crash_label`) is excluded fro
 ## Repository Structure
 
 ```
-FDEWS/
+Financial-distress-early-warning-system/
 ├── bronze_layer/          # SEC EDGAR scrapers, raw TSV/HTML ingestion
 ├── silver_layer/          # Schema enforcement, Parquet partitioning, downcasting
 ├── gold_layer/            # Feature engineering, FinBERT sentiment, distress flags
 ├── modeling/              # XGBoost training, LSTM benchmarking, SHAP analysis
+├── notebooks/             # Exploratory analysis, prototyping, colab experiments
 ├── dashboard/             # Streamlit app, model artifacts (model.json, scaler.joblib)
 ├── data/                  # dataset_link.md → Google Drive access instructions
-└── docs/
-    └── images/            # Architecture diagrams (place PNGs here)
-        ├── 3_tier_system_architecture.png
-        ├── SEC_MULTIMODAL_DATA_REFINERY_PIPELINE_V2.png
-        ├── FEATURE_ORDER_LOCK_V2.png
-        ├── Model_Comparision_V2.png
-        └── dashboard_screenshot.png
+├── docs/
+│   └── images/            # Architecture diagrams (place PNGs here)
+│       ├── 3-TIER_SYSTEM_ARCHITECTURE.png
+│       ├── FEATURE_ORDER_LOCK_V2.png
+│       ├── MODEL_COMPARISION_V2
+│       ├── SEC_MULTIMODAL_DATA_REFINERY_PIPELINE_V2.png
+│       ├── Shap Explainer.png
+        └── XGBoost Forensic Report (SHAP values).png
+├── model_utils.py         # Backend inference engine (shared utilities)
+├── requirements.txt       # Python dependencies
+├── .gitignore             # Excludes large/temporary files
+└── LICENSE                # Apache-2.0
 ```
 
 ---
@@ -153,9 +161,6 @@ FDEWS/
 
 Raw (60GB) and processed data are hosted externally due to size.  
 See [`data/dataset_link.md`](data/dataset_link.md) for Google Drive access instructions.
-
-**Processed Gold dataset** (9,461 rows, inference-ready) is available on HuggingFace:  
-`Jenababu/sec-risk-dashboard` → `multimodal_gold_dataset.parquet`
 
 ---
 
