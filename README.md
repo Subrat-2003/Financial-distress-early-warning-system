@@ -105,7 +105,7 @@ Metadata (`cik`, `company_name`, `adsh`, `ddate`, `crash_label`) is excluded fro
 
 ## Live Dashboard
 
-> **[🚀 Open Live Demo on HuggingFace Spaces](---)**
+> **[Open Live Demo on HuggingFace Spaces](https://huggingface.co/spaces/Sk-Jena/sec-risk-dashboard)**
 
 ![FDEWS Dashboard Screenshot](docs/images/dashboard_screenshot.png)
 
