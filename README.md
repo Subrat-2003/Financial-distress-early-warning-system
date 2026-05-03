@@ -107,7 +107,7 @@ Metadata (`cik`, `company_name`, `adsh`, `ddate`, `crash_label`) is excluded fro
 
 > **[Open Live Demo on HuggingFace Spaces](https://huggingface.co/spaces/Sk-Jena/sec-risk-dashboard)**
 
-![FDEWS Dashboard Screenshot](docs/images/dashboard_screenshot.png)
+![FDEWS Dashboard Screenshot](docs/DASHBOARD.png)
 
 The dashboard runs on the Gold Dataset (9,461 companies, 8.4% crash rate, 17 features) and has 6 pages:
  
@@ -153,6 +153,7 @@ Financial-distress-early-warning-system/
 ├── docs/
 │   └── images/            # Architecture diagrams (place PNGs here)
 │       ├── 3-TIER_SYSTEM_ARCHITECTURE.png
+│       ├── DASHBOARD.png
 │       ├── FEATURE_ORDER_LOCK_V2.png
 │       ├── MODEL_COMPARISION_V2
 │       ├── SEC_MULTIMODAL_DATA_REFINERY_PIPELINE_V2.png
