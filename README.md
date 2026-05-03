@@ -12,9 +12,9 @@
 
 ## Overview
 
-FDEWS handles out-of-core processing for 60GB+ of SEC 10-K/10-Q filings using Polars Lazy Evaluation — keeping RAM footprint low regardless of dataset size. It maps 17 engineered financial ratios to FinBERT-derived MD&A textual sentiment to predict corporate financial distress 12 months ahead. XGBoost runs inference with full SHAP explainability, returning a crash probability and ranked feature attribution for every company.
+FDEWS handles out-of-core processing for 60GB+ of SEC 10-K/10-Q filings using Polars Lazy Evaluation, which keeps the RAM footprint low regardless of dataset size. It maps 17 engineered financial ratios to FinBERT-derived MD&A textual sentiment to predict corporate financial distress 12 months ahead. XGBoost runs inference with full SHAP explainability, returning a crash probability and ranked feature attribution for every company.
 
-**Production winner: XGBoost** — chosen for its tunable precision/recall threshold, which is critical in credit risk where a false positive wastes capital and a false negative destroys it.
+**Production winner: XGBoost** won because it offers a tunable precision/recall threshold. This is critical in credit risk where a false positive wastes capital and a false negative destroys it.
 
 ---
 
@@ -26,9 +26,9 @@ FDEWS handles out-of-core processing for 60GB+ of SEC 10-K/10-Q filings using Po
 
 The system is organized into three tiers:
 
-- **Presentation Tier** — Company selector, Crash Probability Scorecard (gauge), SHAP Waterfall visualization, Sentiment Analysis indicators.
-- **Application Tier** — Feature Engineering Engine (17 features), Feature Order Lock Validator, StandardScaler Synchronization, XGBoost Inference Engine, SHAP Explainability Engine, Joblib Model Loader. LSTM is present as an experimental benchmarking component only.
-- **Data Tier** — SEC EDGAR raw filings → Quarterly/Monthly batches → Polars Lazy Execution → Parquet Storage → 4.9M-row Gold dataset → Model hosting.
+- **Presentation Tier** : Company selector, Crash Probability Scorecard (gauge), SHAP Waterfall visualization, Sentiment Analysis indicators.
+- **Application Tier** : Feature Engineering Engine (17 features), Feature Order Lock Validator, StandardScaler Synchronization, XGBoost Inference Engine, SHAP Explainability Engine, Joblib Model Loader. LSTM is present as an experimental benchmarking component only.
+- **Data Tier** : SEC EDGAR raw filings → Quarterly/Monthly batches → Polars Lazy Execution → Parquet Storage → 4.9M-row Gold dataset → Model hosting.
 
 ---
 
@@ -59,15 +59,15 @@ Range: `-1.0` (extreme distress) → `+1.0` (extreme confidence). Derived from F
 
 ![Feature Order Lock](docs/FEATURE_ORDER_LOCK_V2.png)
 
-Column mismatch between training and inference causes **silent prediction corruption** — the model runs without error but scores the wrong features. The Feature Order Lock enforces:
+Column mismatch between training and inference causes **silent prediction corruption**. The model will continue to run without error, but it scores the wrong features. The Feature Order Lock enforces:
 
-1. **Exact column order** — 17 features locked at extraction time.
-2. **Column name validation** — names must match training schema exactly.
-3. **Feature count check** — any deviation raises a hard error before the scaler is applied.
-4. **Scaler synchronization** — `scaler.joblib` applies identical `mean_` and `scale_` parameters from training.
-5. **DMatrix construction** — validated, scaled features passed to `model.json` for inference.
+1. **Exact column order** : 17 features locked at extraction time.
+2. **Column name validation** : names must match training schema exactly.
+3. **Feature count check** : any deviation raises a hard error before the scaler is applied.
+5. **Scaler synchronization** : `scaler.joblib` applies identical `mean_` and `scale_` parameters from training.
+6. **DMatrix construction** : validated, scaled features passed to `model.json` for inference.
 
-> **Null handling:** If a company misses a filing quarter, affected ratio features are forward-filled from the most recent available filing before the feature vector is constructed. A missing filing does not break the pipeline — it degrades gracefully to the last known state. The `persistent_distress_flag` accounts for this by using a 2-quarter window.
+> **Null handling:** If a company misses a filing quarter, affected ratio features are forward-filled from the most recent available filing before the feature vector is constructed. A missing filing doesn't mean the pipeline crashes. Instead, it's built to degrade gracefully to the last known state. We use a two-quarter window for the persistent_distress_flag so the model can account for these gaps automatically.
 
 **The 17 locked features (in order):**
 
@@ -109,7 +109,16 @@ Metadata (`cik`, `company_name`, `adsh`, `ddate`, `crash_label`) is excluded fro
 
 ![FDEWS Dashboard Screenshot](docs/images/dashboard_screenshot.png)
 
-*Dashboard features: Company selector by CIK → Crash Probability Scorecard → SHAP Waterfall (per-feature risk attribution) → 7-day Sentiment Trend → Feature Impact Ranking.*
+The dashboard runs on the Gold Dataset (9,461 companies, 8.4% crash rate, 17 features) and has 6 pages:
+ 
+| Page | What It Shows |
+|---|---|
+| **Overview** | Crash label distribution (8.4% crash rate), per-feature violin plots split by crash/safe label |
+| **Predictions** | Adjustable risk threshold slider, histogram of predicted crash probabilities, Top 30 highest-risk companies table with all 17 feature values |
+| **SHAP Explainer** | Global feature importance bar chart (`sentiment_signal` ranks #1 by a wide margin — confirming NLP is the dominant signal, not a supplementary one), SHAP beeswarm, single-company waterfall |
+| **LSTM Analysis** | Training history curves (epoch vs. accuracy/loss/recall), LSTM dataset explorer (`final_lstm_dataset.parquet`, shape 9461×23) |
+| **Sentiment Signals** | MDA sentiment signal table (1,745 filings with extracted signals), distribution histogram |
+| **Raw Data Explorer** | Full Gold Dataset, Sentiment, LSTM, and File Status tabs — shape 9461×23 |
 
 ---
 
@@ -117,7 +126,7 @@ Metadata (`cik`, `company_name`, `adsh`, `ddate`, `crash_label`) is excluded fro
 
 | Layer | Technology | Role |
 |---|---|---|
-| Data Processing | **Polars** (Lazy/Streaming) | Out-of-core 60GB ingestion — processes larger-than-RAM datasets by building a query plan and materializing only required columns |
+| Data Processing | **Polars** (Lazy/Streaming) | Out-of-core 60GB ingestion. It processes datasets larger than the available RAM by building a query plan and materializing only the required columns |
 | Storage | **Parquet** | Columnar, compressed, fast analytical reads |
 | NLP | **FinBERT** (HuggingFace Transformers) | MD&A sentiment extraction + Softmax signal |
 | HTML Parsing | **BeautifulSoup + Regex** | MD&A section extraction from SEC HTML filings |
@@ -165,8 +174,9 @@ See [`data/dataset_link.md`](data/dataset_link.md) for Google Drive access instr
 ---
 
 ## Known Limitations
-
+ 
 - LSTM is benchmarking-only; precision is too low for production credit decisions.
+- Sentiment signal coverage is partial: 1,745 of 9,461 companies have an extracted MD&A signal. The remaining ~7,700 have `sentiment_signal = 0` (neutral default), which may understate distress in companies with parseable but unprocessed filings.
 - Sentiment signal quality degrades on companies with boilerplate/templated MD&A language.
-- Walk-forward split assumes stationarity of distress patterns across economic cycles — this holds for 2020–2024 but may need recalibration post-2025 rate environment.
-- `persistent_distress_flag` uses a 2-quarter window; longer windows untested.
+- Walk-forward split assumes stationarity of distress patterns across economic cycles, this holds for 2020–2024 but may need recalibration post-2025 rate environment.
+- `persistent_distress_flag` uses a 2 quarter window; longer windows untested.
