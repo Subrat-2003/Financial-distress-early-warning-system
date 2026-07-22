@@ -165,14 +165,19 @@ Financial-distress-early-warning-system/
 ├── dashboard/             # Streamlit app, model artifacts (model.json, scaler.joblib)
 ├── data/                  # dataset_link.md → Google Drive access instructions
 ├── docs/
-│   └── images/            # Architecture diagrams (place PNGs here)
-│       ├── 3-TIER_SYSTEM_ARCHITECTURE.png
-│       ├── DASHBOARD.png
-│       ├── FEATURE_ORDER_LOCK_V2.png
-│       ├── MODEL_COMPARISION_V2
-│       ├── SEC_MULTIMODAL_DATA_REFINERY_PIPELINE_V2.png
-│       ├── Shap Explainer.png
-        └── XGBoost Forensic Report (SHAP values).png
+│   └── images/        
+│   |    ├── 3-TIER_SYSTEM_ARCHITECTURE.png
+│   |    ├── DASHBOARD.png
+│   |    ├── FEATURE_ORDER_LOCK_V2.png
+│   |    ├── MODEL_COMPARISION_V2
+│   |    ├── SEC_MULTIMODAL_DATA_REFINERY_PIPELINE_V2.png
+│   |    ├── Shap Explainer.png
+|   |    └── XGBoost Forensic Report (SHAP values).png
+|   ├── 01_Business_Problem.md
+|   ├── 02_PRD.md
+|   ├── 03_Functional_Specification.md
+|   ├── 04_Future_Scope.md
+|   └── 05_User_Guide.md
 ├── model_utils.py         # Backend inference engine (shared utilities)
 ├── requirements.txt       # Python dependencies
 ├── .gitignore             # Excludes large/temporary files
