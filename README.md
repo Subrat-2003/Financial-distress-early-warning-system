@@ -18,6 +18,20 @@ FDEWS handles out-of-core processing for 60GB+ of SEC 10-K/10-Q filings using Po
 
 ---
 
+## Project Documentation
+
+The project includes detailed engineering documentation.
+
+| Document | Description |
+|----------|-------------|
+| [Business Problem](docs/01_Business_Problem.md) | Business context, stakeholders and project scope |
+| [Product Requirements Document](docs/02_PRD.md) | Functional and non-functional requirements |
+| [Functional Specification](docs/03_Functional_Specification.md) | System architecture, modules and implementation details |
+| [Future Scope](docs/04_Future_Scope.md) | Planned enhancements and current limitations |
+| [User Guide](docs/05_User_Guide.md) | Setup, dashboard walkthrough and usage instructions |
+
+---
+
 ## System Architecture
 
 ### 3-Tier Application Design
