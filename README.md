@@ -22,7 +22,7 @@ FDEWS handles out-of-core processing for 60GB+ of SEC 10-K/10-Q filings using Po
 
 ### 3-Tier Application Design
 
-![3-Tier System Architecture](docs/3-TIER_SYSTEM_ARCHITECTURE.png)
+![3-Tier System Architecture](docs/images/3-TIER_SYSTEM_ARCHITECTURE.png)
 
 The system is organized into three tiers:
 
@@ -34,7 +34,7 @@ The system is organized into three tiers:
 
 ## SEC Multimodal Data Refinery Pipeline
 
-![SEC Multimodal Data Refinery Pipeline](docs/SEC_MULTIMODAL_DATA_REFINERY_PIPELINE_V2.png)
+![SEC Multimodal Data Refinery Pipeline](docs/images/SEC_MULTIMODAL_DATA_REFINERY_PIPELINE_V2.png)
 
 The pipeline follows the **Medallion Architecture**:
 
@@ -57,7 +57,7 @@ Range: `-1.0` (extreme distress) → `+1.0` (extreme confidence). Derived from F
 
 ## Feature Order Lock — Silent Prediction Drift Prevention
 
-![Feature Order Lock](docs/FEATURE_ORDER_LOCK_V2.png)
+![Feature Order Lock](docs/images/FEATURE_ORDER_LOCK_V2.png)
 
 Column mismatch between training and inference causes **silent prediction corruption**. The model will continue to run without error, but it scores the wrong features. The Feature Order Lock enforces:
 
@@ -86,7 +86,7 @@ Metadata (`cik`, `company_name`, `adsh`, `ddate`, `crash_label`) is excluded fro
 
 ## Modeling Showdown: LSTM vs XGBoost
 
-![Model Comparison](docs/MODEL_COMPARISION_V2.png)
+![Model Comparison](docs/images/MODEL_COMPARISION_V2.png)
 
 | Dimension | LSTM | XGBoost |
 |---|---|---|
@@ -107,7 +107,7 @@ Metadata (`cik`, `company_name`, `adsh`, `ddate`, `crash_label`) is excluded fro
 
 > **[Open Live Demo on HuggingFace Spaces](https://huggingface.co/spaces/Sk-Jena/sec-risk-dashboard)**
 
-![FDEWS Dashboard Screenshot](docs/DASHBOARD.png)
+![FDEWS Dashboard Screenshot](docs/images/DASHBOARD.png)
 
 The dashboard runs on the Gold Dataset (9,461 companies, 8.4% crash rate, 17 features) and has 6 pages:
  
