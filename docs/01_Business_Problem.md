@@ -9,7 +9,7 @@
 
 ## 1. Business Context
 
-Public companies are required to submit periodic financial disclosures — such as 10-K and 10-Q filings — to regulators like the SEC. Investors, lenders, analysts, and regulators rely on these filings to assess a company's financial health and creditworthiness. As the number of publicly listed companies and the volume of disclosed financial data grow, manually reviewing every filing in depth has become increasingly time-consuming and difficult to scale across a large portfolio of companies.
+Public companies are required to submit periodic financial disclosures such as 10-K and 10-Q filings — to regulators like the SEC. Investors, lenders, analysts, and regulators rely on these filings to assess a company's financial health and creditworthiness. As the number of publicly listed companies and the volume of disclosed financial data grow, manually reviewing every filing in depth has become increasingly time-consuming and difficult to scale across a large portfolio of companies.
 
 ## 2. Business Need
 
@@ -17,7 +17,7 @@ Financial institutions and investment teams increasingly require scalable method
 
 ## 3. Business Problem
 
-Financial distress — a company's declining ability to meet its financial obligations — often develops gradually before becoming visible through credit downgrades or public news. Traditional distress-detection approaches rely heavily on structured financial ratios calculated after the fact, and typically overlook the qualitative language companies use in their own disclosures, which can carry early signals of deteriorating confidence or risk.
+Financial distress, a company's declining ability to meet its financial obligations — often develops gradually before becoming visible through credit downgrades or public news. Traditional distress-detection approaches rely heavily on structured financial ratios calculated after the fact, and typically overlook the qualitative language companies use in their own disclosures, which can carry early signals of deteriorating confidence or risk.
 
 ## 4. Current Challenges
 
@@ -34,7 +34,7 @@ Financial distress — a company's declining ability to meet its financial oblig
 
 ## 6. Stakeholders
 
-*(Typical roles in this problem space — not real users or clients of this project)*
+*(Typical roles in this problem space, not real users or clients of this project)*
 
 | Stakeholder | Interest in the Problem |
 |---|---|
@@ -45,7 +45,7 @@ Financial distress — a company's declining ability to meet its financial oblig
 
 ## 7. Problem Statement
 
-> There is a need for a scalable, systematic approach to identify early signs of financial distress in publicly listed companies — using their own regulatory disclosures — that goes beyond structured financial ratios alone and can be applied consistently across a large number of companies.
+> There is a need for a scalable, systematic approach to identify early signs of financial distress in publicly listed companies using their own regulatory disclosures that goes beyond structured financial ratios alone and can be applied consistently across a large number of companies.
 
 ## 8. High-Level Proposed Solution
 
